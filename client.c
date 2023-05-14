@@ -18,13 +18,24 @@ void handleInput(char *request)
 		printf("Select one and enter the corresponding number and required arguments:\n1. Add or Delete a product.\n2. Update quantity/price of a product.\n");
 		int requestType;
 		scanf("%d", &requestType);
+		getchar();
 		if (requestType == 1)
 		{
-			strcpy(request, "1 ProductID Operation");
+			printf("For ADD: 0 ProductName Cost Quantity.\n");
+			printf("For DEL: 1 ProductID\n");
+			char requestBuff[MAX_MESSAGE_LEN];
+			gets(requestBuff);
+			strcpy(request, "1 ");
+			strcat(request, requestBuff);
 		}
 		else if (requestType == 2)
 		{
-			strcpy(request, "2 ProductID Price Quantity");
+			// put -1 if you don't want to change
+			printf("Enter : ProductID newPrice newQuantity\n");
+			char requestBuff[MAX_MESSAGE_LEN];
+			gets(requestBuff);
+			strcpy(request, "2 ");
+			strcat(request, requestBuff);
 		}
 	}
 	else if (accountType == 2)
@@ -32,6 +43,7 @@ void handleInput(char *request)
 		printf("Select one and enter the corresponding number and required arguments:\n1. List Available Products.\n2. Display Cart.\n3. Add a Product to cart.\n4. Edit Cart items.\n");
 		int requestType;
 		scanf("%d", &requestType);
+		getchar();
 		if (requestType == 1)
 		{
 			strcpy(request, "1");
@@ -42,13 +54,22 @@ void handleInput(char *request)
 		}
 		else if (requestType == 3)
 		{
-			strcpy(request, "3 ProductID Quantity");
+			printf("Enter : ProductID Quantity\n");
+			char requestBuff[MAX_MESSAGE_LEN];
+			gets(requestBuff);
+			strcpy(request, "3 ");
+			strcat(request, requestBuff);
 		}
 		else if (requestType == 4)
 		{
-			strcpy(request, "4 ProductID Quantity");
+			printf("Enter : ProductID newQuantity\n");
+			char requestBuff[MAX_MESSAGE_LEN];
+			gets(requestBuff);
+			strcpy(request, "4 ");
+			strcat(request, requestBuff);
 		}
 	}	
+	printf("requested -> %s\n", request);			
 }
 
 int main()
