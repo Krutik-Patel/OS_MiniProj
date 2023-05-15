@@ -3,7 +3,7 @@
 #include "adminFuncs.h"
 #include <string.h>
 #include <stdio.h>
-void handleClientRequest(char* request, char*response, int accountType, int cfd)
+void handleClientRequest(char* request, char*response, int accountType, int cfd, int userID)
 {
 	parseResponse(request);
 	if (accountType == 1)
@@ -31,19 +31,19 @@ void handleClientRequest(char* request, char*response, int accountType, int cfd)
 		}
 		else if (!strcmp(currRequest[0], "2"))
 		{
-			userListCart(response);
+			userListCart(response, userID);
 		}
 		else if (!strcmp(currRequest[0], "3"))
 		{
-			addToCart(currRequest, response);
+			addToCart(currRequest, response, userID);
 		}
 		else if (!strcmp(currRequest[0], "4"))
 		{
-			editCart(currRequest, response);
+			editCart(currRequest, response, userID);
 		}
 		else if (!strcmp(currRequest[0], "5"))
 		{
-			buyCart(request, response, cfd);	
+			buyCart(request, response, cfd, userID);	
 		}
 	}
 	

@@ -35,10 +35,13 @@ void userListProducts(char *response)
 	close(fd);
 }
 
-void userListCart(char *response)
+void userListCart(char *response, int userID)
 {
+	char userCart[20];
+	sprintf(userCart, "%d.cart", userID);
+	printf("cartName: %s\n", userCart);
+	int fd = open(userCart, O_CREAT | O_RDWR, 0777);
 	char msgToSend[MAX_MESSAGE_LEN];
-	int fd = open("ID.cart", O_RDWR, 0777);
 	struct Product prod;
 	
 	lseek(fd, 0, SEEK_SET);
@@ -53,16 +56,19 @@ void userListCart(char *response)
 		sprintf(result, " %d\n", prod.quantity);
 		strcat(msgToSend, result);
 		
-		strcpy(response, "::CART ITEMS::\nProduct Info in order: P_ID, P_NAME, COST, QTY\n");
-		strcat(response, msgToSend);
 	}
-	
+	strcpy(response, "::CART ITEMS::\nProduct Info in order: P_ID, P_NAME, COST, QTY\n");
+	strcat(response, msgToSend);
+	strcpy(msgToSend, "");
 	close(fd);
 }
 
-void addToCart(char cReq[][MAX_WORD_SZ], char *response)
+void addToCart(char cReq[][MAX_WORD_SZ], char *response, int userID)
 {
-	int fd_cart = open("ID.cart", O_RDWR, 0777);
+	char userCart[20];
+	sprintf(userCart, "%d.cart", userID);
+	int fd_cart = open(userCart, O_RDWR, 0777);
+
 	int fd_prodList = open(PRODUCT_FILE, O_CREAT | O_RDONLY);
 	
 	struct Product requestedProduct;
@@ -87,9 +93,12 @@ void addToCart(char cReq[][MAX_WORD_SZ], char *response)
 	strcpy(response, "Product added to cart!\n");
 }
 
-void editCart(char cReq[][MAX_WORD_SZ], char *response)
+void editCart(char cReq[][MAX_WORD_SZ], char *response, int userID)
 {
-	int fd_cart = open("ID.cart", O_RDWR, 0777);
+	char userCart[20];
+	sprintf(userCart, "%d.cart", userID);
+	int fd_cart = open(userCart, O_RDWR, 0777);
+
 	int fd_prodList = open(PRODUCT_FILE, O_CREAT | O_RDONLY, 0777);
 	
 	struct Product cartItems[MAX_CART_SZ];
@@ -112,9 +121,10 @@ void editCart(char cReq[][MAX_WORD_SZ], char *response)
 		cartItems[items++] = cartItem;
 	}
 	close(fd_cart);
-	
+		
 	for (int itemsIter = 0; itemsIter < items; itemsIter++)
 	{
+		printf("Product Found in cart!\n");
 		if (cartItems[itemsIter].product_id == requestedPID)
 		{
 			cartItems[itemsIter].quantity = requestedQuantity;
@@ -122,7 +132,7 @@ void editCart(char cReq[][MAX_WORD_SZ], char *response)
 		}	
 	}
 	
-	fd_cart = open("ID.cart", O_RDWR | O_TRUNC, 0777);
+	fd_cart = open(userCart, O_RDWR | O_TRUNC, 0777);
 	lseek(fd_cart, 0, SEEK_SET);
 	for (int itemsIter = 0; itemsIter < items; itemsIter++)
 	{
@@ -136,9 +146,11 @@ void editCart(char cReq[][MAX_WORD_SZ], char *response)
 	strcpy(response, "Your Cart is updated!\n");
 }
 
-void buyCart(char *request, char *response, int cfd)
+void buyCart(char *request, char *response, int cfd, int userID)
 {
-	int fd_cart = open("ID.cart", O_CREAT | O_RDONLY, 0777);
+	char userCart[20];
+	sprintf(userCart, "%d.cart", userID);
+	int fd_cart = open(userCart, O_RDWR, 0777);
 	int fd_prod = open(PRODUCT_FILE, O_RDWR, 0777);
 	
 	printf("fd_prod : %d", fd_prod); fflush(stdout);
@@ -186,7 +198,8 @@ void buyCart(char *request, char *response, int cfd)
 	
 	// release lock
 	strcpy(response, "You payment was successful.\n");
-	
+	close(fd_prod);
+	close(fd_cart);	
 }
 
 
