@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 void userListProducts(char *response)
 {
 	char msgToSend[MAX_MESSAGE_LEN];
@@ -186,7 +187,7 @@ void buyCart(char *request, char *response, int cfd, int userID)
 		}
 	}
 	
-	
+	// release lock
 	lock.l_type = F_UNLCK;
 	fcntl(fd_prod, F_SETLK, &lock);
 	perror("Outside Critical Section");
@@ -196,7 +197,15 @@ void buyCart(char *request, char *response, int cfd, int userID)
 	write(cfd, response, MAX_MESSAGE_LEN);
 	read(cfd, request, MAX_MESSAGE_LEN);
 	
-	// release lock
+	// USER RECEIPT
+	char userReceipt[40];
+	sprintf(userReceipt, "%d.receipt.log", userID);
+	int receiptfd = open(userReceipt, O_CREAT | O_WRONLY, 0777);
+	lseek(receiptfd, 0, SEEK_END);
+	char receiptMsg[200] = "Your transaction of amount %d was successful.\n";
+	write(receiptfd, receiptMsg, sizeof(receiptMsg));
+	close(receiptfd);
+
 	strcpy(response, "You payment was successful.\n");
 	close(fd_prod);
 	close(fd_cart);	
