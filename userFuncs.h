@@ -1,7 +1,7 @@
 #include "protocol.h"
 
 void userListProducts(char *response);
-void userListCart(char *response);
-void addToCart(char [][MAX_WORD_SZ], char *response);
-void editCart(char [][MAX_WORD_SZ], char *response);
-void buyCart(char *request, char *response, int cfd);
+void userListCart(char *response, int userID);
+void addToCart(char [][MAX_WORD_SZ], char *response, int userID);
+void editCart(char [][MAX_WORD_SZ], char *response, int userID);
+void buyCart(char *request, char *response, int cfd, int userID);

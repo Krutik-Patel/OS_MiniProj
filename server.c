@@ -27,7 +27,7 @@ void *handleClient(void *args)
 		char request[MAX_MESSAGE_LEN], response[MAX_MESSAGE_LEN];
 		read(clifd, request, MAX_MESSAGE_LEN);
 		printf("client -> %s", request);
-		handleClientRequest(request, response, accountType, clifd);
+		handleClientRequest(request, response, accountType, clifd, userID);
 		write(clifd, response, MAX_MESSAGE_LEN);
 	}
 	close(clifd);

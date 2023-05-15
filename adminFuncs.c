@@ -108,24 +108,25 @@ void adminOperationUPDATE(char cReq[][MAX_WORD_SZ], char *response)
 	lock.l_pid = getpid();
 	
 	fcntl(fd_prod, F_SETLKW, &lock);
-	perror("Inside critical section\n");
+	perror("Inside critical section");
 
 	struct Product prod;
 	while (read(fd_prod, &prod, sizeof(struct Product)) > 0)
 	{
 		if (prod.product_id == prodIDToUpd)
 		{
+			printf("Product found!\n"); fflush(stdout);
 			prod.cost = prodCost;
 			prod.quantity = prodQty;
+			lseek(fd_prod, -sizeof(struct Product), SEEK_CUR);
+			write(fd_prod, &prod, sizeof(struct Product));
+			break;
 		}
-		lseek(fd_prod, -sizeof(struct Product), SEEK_CUR);
-		write(fd_prod, &prod, sizeof(struct Product));
-		break;
 	}
 	
 	lock.l_type = F_UNLCK;
 	fcntl(fd_prod, F_SETLK, &lock);
-	perror("Outside Critical Section\n");
+	perror("Outside Critical Section");
 	
 	close(fd_prod);
 	strcpy(response, "Product List is updated!\n");
@@ -135,7 +136,7 @@ void adminOperationUPDATE(char cReq[][MAX_WORD_SZ], char *response)
 int getNewID(int fd_prod)
 {
 	struct Product prod;
-	int maxProdId = 1;
+	int maxProdId = 0;
 	while(read(fd_prod, &prod, sizeof(struct Product)) > 0)
 	{
 		maxProdId = max(prod.product_id, maxProdId);
