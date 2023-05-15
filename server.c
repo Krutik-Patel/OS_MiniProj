@@ -15,18 +15,19 @@ void *handleClient(void *args)
 	int clifd = *(int *)args;
 	
 	// account type
-	int accountType = 0; // if Admin -> 1, if user -> 2
+	int accountType = 0, userID = -1; // if Admin -> 1, if user -> 2
 	char userAdminBuff[MAX_MESSAGE_LEN];
-	read(clifd, userAdminBuff, 1);
+	read(clifd, userAdminBuff, 5);
 	accountType = userAdminBuff[0] - '0';
-		
+	userID = atoi(userAdminBuff + 2);
+	printf("userID = %d\n", userID);
 	
 	while (1)
 	{
 		char request[MAX_MESSAGE_LEN], response[MAX_MESSAGE_LEN];
 		read(clifd, request, MAX_MESSAGE_LEN);
 		printf("client -> %s", request);
-		handleClientRequest(request, response, accountType);
+		handleClientRequest(request, response, accountType, clifd);
 		write(clifd, response, MAX_MESSAGE_LEN);
 	}
 	close(clifd);
@@ -48,7 +49,7 @@ int main()
 	printf("Listening from server...\n");
 	
 		
-	char msgMain[MAX_MESSAGE_LEN] = "Welcome to Ecommerce service:\nLogin as:\n1. Admin\n2.User\n";
+	char msgMain[MAX_MESSAGE_LEN] = "Welcome to Ecommerce service:\nLogin as:\n1. Admin\n2. User(if User, enter : 2 UserID \n";
 	
 	int clientAddrLen = sizeof(client);
 	
