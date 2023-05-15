@@ -1,7 +1,9 @@
 #include "requestHandler.h"
+#include "userFuncs.h"
+#include "adminFuncs.h"
 #include <string.h>
 #include <stdio.h>
-void handleClientRequest(char* request, char*response, int accountType)
+void handleClientRequest(char* request, char*response, int accountType, int cfd)
 {
 	parseResponse(request);
 	if (accountType == 1)
@@ -9,33 +11,42 @@ void handleClientRequest(char* request, char*response, int accountType)
 		printf("%s\n", currRequest[0]);
 		if (!strcmp(currRequest[0], "1"))
 		{
-			printf("Add or delete product\n");
+			adminOperationADDDEL(currRequest, response);
 		}
 		else if (!strcmp(currRequest[0], "2"))
 		{
-			printf("Update product\n");
+			adminOperationUPDATE(currRequest, response);			
 		}
+		else if (!strcmp(currRequest[0], "3"))
+		{
+			userListProducts(response);
+		}
+		
 	}
 	else if (accountType == 2)
 	{
 		if (!strcmp(currRequest[0], "1"))
 		{
-			printf("Add or delete product\n");
+			userListProducts(response);
 		}
 		else if (!strcmp(currRequest[0], "2"))
 		{
-			printf("Update product\n");
+			userListCart(response);
 		}
 		else if (!strcmp(currRequest[0], "3"))
 		{
-			printf("Cart add\n");
+			addToCart(currRequest, response);
 		}
 		else if (!strcmp(currRequest[0], "4"))
 		{
-			printf("Edit card\n");
+			editCart(currRequest, response);
+		}
+		else if (!strcmp(currRequest[0], "5"))
+		{
+			buyCart(request, response, cfd);	
 		}
 	}
-	strcpy(response, "You response has been responded properly\n");
+	
 }
 
 void parseResponse(char *request)
