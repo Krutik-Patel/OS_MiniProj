@@ -10,6 +10,7 @@
 #include "protocol.h"
 #include <sys/sem.h>
 #include <sys/ipc.h>
+#include <string.h>
 
 union semun
 {
@@ -37,6 +38,12 @@ void *handleClient(void *args)
 		char request[MAX_MESSAGE_LEN], response[MAX_MESSAGE_LEN];
 		read(clifd, request, MAX_MESSAGE_LEN);
 		printf("client -> %s", request);
+		if (strcmp(request, "EXITEXIT"))
+		{
+			printf("Client Quiting...\n");
+			close(clifd);
+			break;
+		}
 		handleClientRequest(request, response, accountType, clifd, userID);
 		write(clifd, response, MAX_MESSAGE_LEN);
 	}
@@ -44,7 +51,6 @@ void *handleClient(void *args)
 	struct sembuf buf = {0, 1, 0};
 	int sct = semop(semid, &buf, 1);
 	printf("Releasing Semaphore -> %d\n", sct);
-	close(clifd);
 }
 
 

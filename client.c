@@ -125,12 +125,12 @@ int main()
 		char request[MAX_MESSAGE_LEN], serverResponse[MAX_MESSAGE_LEN];
 		handleInput(request, serverResponse, sockfd);
 		// response considered only of one integer for now.
+		write(sockfd, request, MAX_MESSAGE_LEN);
 		if (!strcmp(request, terminationStr))
 		{
 			printf("Exiting application...\n");
 			break;
 		}
-		write(sockfd, request, MAX_MESSAGE_LEN);
 		read(sockfd, serverResponse, MAX_MESSAGE_LEN);
 		printf("SERVER : %s", serverResponse);
 	}
